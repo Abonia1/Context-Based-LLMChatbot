@@ -1,0 +1,50 @@
+DEBUG:Chroma:Logger created
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:time to pre process our knn query: 6.9141387939453125e-06
+DEBUG:Chroma:time to run knn query: 0.0023889541625976562
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+WARNING:unstructured:detectron2 is not installed. Cannot use the hi_res partitioning strategy. Falling back to partitioning with the fast strategy.
+WARNING:unstructured:detectron2 is not installed. Cannot use the hi_res partitioning strategy. Falling back to partitioning with the fast strategy.
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:time to pre process our knn query: 5.7220458984375e-06
+DEBUG:Chroma:time to run knn query: 0.0025708675384521484
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:time to pre process our knn query: 2.86102294921875e-06
+DEBUG:Chroma:time to run knn query: 0.00019693374633789062
+DEBUG:Chroma:time to pre process our knn query: 2.09808349609375e-05
+DEBUG:Chroma:time to run knn query: 0.0007688999176025391
+DEBUG:Chroma:time to pre process our knn query: 4.0531158447265625e-06
+DEBUG:Chroma:time to run knn query: 0.00026798248291015625
+DEBUG:Chroma:time to pre process our knn query: 4.0531158447265625e-06
+DEBUG:Chroma:time to run knn query: 0.0004591941833496094
+DEBUG:Chroma:time to pre process our knn query: 2.1457672119140625e-06
+DEBUG:Chroma:time to run knn query: 0.00020599365234375
+DEBUG:Chroma:time to pre process our knn query: 9.5367431640625e-07
+DEBUG:Chroma:time to run knn query: 0.0002009868621826172
+DEBUG:Chroma:time to pre process our knn query: 3.4809112548828125e-05
+DEBUG:Chroma:time to run knn query: 0.0010712146759033203
+DEBUG:Chroma:time to pre process our knn query: 2.1457672119140625e-06
+DEBUG:Chroma:time to run knn query: 0.00019097328186035156
+DEBUG:Chroma:Logger created
+DEBUG:Chroma:Index not found
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:Index saved to .chroma/index/index.bin
+DEBUG:Chroma:time to pre process our knn query: 8.106231689453125e-06
+DEBUG:Chroma:time to run knn query: 0.00033211708068847656

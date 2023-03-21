@@ -1,0 +1,45 @@
+2023-03-21 11:28:10,786 - DEBUG - Logger created
+2023-03-21 11:28:10,827 - INFO - Successfully imported ClickHouse Connect C data optimizations
+2023-03-21 11:28:10,830 - INFO - Successfully import ClickHouse Connect C/Numpy optimizations
+2023-03-21 11:28:10,859 - INFO - Using ujson library for writing JSON byte strings
+2023-03-21 11:28:12,796 - DEBUG - Index saved to /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore/index/index.bin
+2023-03-21 11:28:12,842 - INFO - All documents were processed and saved in /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore.
+2023-03-21 11:28:12,842 - INFO - Start answering based on prompt: what is the email address of abonia sojaisngarayar.
+2023-03-21 11:28:13,001 - INFO - The top 4 chunks are considered to answer the user's query.
+2023-03-21 11:28:13,209 - DEBUG - time to pre process our knn query: 5.0067901611328125e-06
+2023-03-21 11:28:13,211 - DEBUG - time to run knn query: 0.0001850128173828125
+2023-03-21 11:38:16,570 - DEBUG - Logger created
+2023-03-21 11:38:16,643 - INFO - Successfully imported ClickHouse Connect C data optimizations
+2023-03-21 11:38:16,670 - INFO - Successfully import ClickHouse Connect C/Numpy optimizations
+2023-03-21 11:38:16,721 - INFO - Using ujson library for writing JSON byte strings
+2023-03-21 11:38:18,743 - DEBUG - Index saved to /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore/index/index.bin
+2023-03-21 11:38:18,803 - INFO - All documents were processed and saved in /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore.
+2023-03-21 11:38:18,803 - INFO - Start answering based on prompt: what is the email address of abonia sojaisngarayar.
+2023-03-21 11:38:18,852 - INFO - The top 4 chunks are considered to answer the user's query.
+2023-03-21 11:38:19,013 - DEBUG - time to pre process our knn query: 2.1457672119140625e-06
+2023-03-21 11:38:19,014 - DEBUG - time to run knn query: 0.00020360946655273438
+2023-03-21 11:40:12,757 - INFO - All documents were processed and saved in /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore.
+2023-03-21 11:40:12,758 - INFO - Start answering based on prompt: what is the email address of abonia sojaisngarayar.
+2023-03-21 11:40:12,841 - DEBUG - Logger created
+2023-03-21 11:40:12,946 - INFO - Successfully imported ClickHouse Connect C data optimizations
+2023-03-21 11:40:12,951 - INFO - Successfully import ClickHouse Connect C/Numpy optimizations
+2023-03-21 11:40:12,975 - INFO - Using ujson library for writing JSON byte strings
+2023-03-21 11:40:13,499 - INFO - The top 4 chunks are considered to answer the user's query.
+2023-03-21 11:40:14,959 - DEBUG - time to pre process our knn query: 5.245208740234375e-06
+2023-03-21 11:40:14,960 - DEBUG - time to run knn query: 0.00028777122497558594
+2023-03-21 12:11:32,874 - DEBUG - Logger created
+2023-03-21 12:11:32,925 - INFO - Successfully imported ClickHouse Connect C data optimizations
+2023-03-21 12:11:32,932 - INFO - Successfully import ClickHouse Connect C/Numpy optimizations
+2023-03-21 12:11:32,974 - INFO - Using ujson library for writing JSON byte strings
+2023-03-21 12:11:35,395 - DEBUG - Index saved to /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore/index/index.bin
+2023-03-21 12:11:35,447 - INFO - All documents were processed and saved in /Users/sojasingarayar/Documents/project/Context-Based-LLMChatbot/vectorstore.
+2023-03-21 12:11:35,447 - INFO - Start answering based on prompt: what is the email address of abonia sojaisngarayar.
+2023-03-21 12:11:35,486 - INFO - The top 4 chunks are considered to answer the user's query.
+2023-03-21 12:11:36,116 - DEBUG - time to pre process our knn query: 3.0994415283203125e-06
+2023-03-21 12:11:36,116 - DEBUG - time to run knn query: 0.0002799034118652344
+2023-03-21 12:35:53,781 - DEBUG - Logger created
+2023-03-21 12:35:53,807 - INFO - Successfully imported ClickHouse Connect C data optimizations
+2023-03-21 12:35:53,813 - INFO - Successfully import ClickHouse Connect C/Numpy optimizations
+2023-03-21 12:35:53,841 - INFO - Using ujson library for writing JSON byte strings
+2023-03-21 12:35:54,283 - INFO - Start answering based on prompt: what is the email address of abonia sojaisngarayar.
+2023-03-21 12:35:54,288 - INFO - The top 4 chunks are considered to answer the user's query.
