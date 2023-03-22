@@ -1,4 +1,7 @@
 # 💁 Document-Based/Context-Based Chatbot with Langchain, LLM (GPT-3), and Chroma 📝
+==============
+
+![build](https://github.com/buttons/github-buttons/workflows/build/badge.svg)
 
 🤖 This is a chatbot that uses a combination of Langchain, LLM (GPT-3), and Chroma to generate responses based on a user's input and a provided document or context.
 Features
