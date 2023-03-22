@@ -1,4 +1,8 @@
-# 💁 Document-Based/Context-Based Chatbot with Langchain, LLM (GPT-3), and Chroma 📝
+ 💁 Document-Based/Context-Based Chatbot with Langchain, LLM (GPT-3), and Chroma 📝
+==============
+
+![build](https://github.com/buttons/github-buttons/workflows/build/badge.svg)
+[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aboniasojasingarayar/)&nbsp; [![Medium Articles](https://img.shields.io/badge/medium-%230077B5.svg?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@abonia)
 
 🤖 This is a chatbot that uses a combination of Langchain, LLM (GPT-3), and Chroma to generate responses based on a user's input and a provided document or context.
 Features
@@ -19,6 +23,9 @@ Features
 
 ## Technical Architecture
 ![](img/Technical-Architecture.png)
+
+## Documentation
+Read the [article](https://medium.com/@abonia/document-based-llm-powered-chatbot-bb316009de93) to learn more.
 
 ## Requirements
 
