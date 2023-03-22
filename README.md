@@ -1,4 +1,4 @@
-# 💁 Document-Based/Context-Based Chatbot with Langchain, LLM (GPT-3), and Chroma 📝
+ 💁 Document-Based/Context-Based Chatbot with Langchain, LLM (GPT-3), and Chroma 📝
 ==============
 
 ![build](https://github.com/buttons/github-buttons/workflows/build/badge.svg)
