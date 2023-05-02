@@ -37,7 +37,7 @@ Read the [article](https://medium.com/@abonia/document-based-llm-powered-chatbot
 
 Clone the repository:
 
-`git clone https://github.com/your-username/your-repository.git`
+`git clone https://github.com/Abonia1/Context-Based-LLMChatbot.git`
 
 Install the required Python packages:
 
