@@ -38,7 +38,7 @@ LOGGER = logging.getLogger(__name__)
 #docsearch = Chroma.from_documents(texts, embeddings)
 
 # Define answer generation function
-def answer(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR) -> str:
+def answer(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
 
     #documents = st.file_uploader("**Upload Your PDF File**", type=["pdf"])
 
@@ -80,9 +80,14 @@ def answer(prompt: str, documents: List[Document], persist_directory: str = conf
     result = qa({"query": prompt})
     answer = result["result"]
 
+    qa_sources = VectorDBQA.from_chain_type(llm=OpenAI(openai_api_key = config.OPENAI_API_KEY), chain_type="stuff", vectorstore=docsearch, return_source_documents=True)
+
+    result_sources = qa_sources({"query": prompt})
+    sources = result_sources['source_documents']
+
     # Log a message indicating the answer that was generated
     LOGGER.info(f"The returned answer is: {answer}")
 
     # Log a message indicating that the function has finished and return the answer.
     LOGGER.info(f"Answering module over.")
-    return answer
+    return answer, sources

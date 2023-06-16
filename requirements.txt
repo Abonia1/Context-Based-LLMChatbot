@@ -2,3 +2,7 @@ streamlit_chat==0.0.2.2
 nltk==3.8.1
 streamlit==1.19.0
 langchain==0.0.129
+pypdf
+openai
+chromadb
+tiktoken
