@@ -4,13 +4,14 @@ from streamlit_chat import message
 import re
 from io import BytesIO
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from typing import List
+from typing import List, Iterator
 from langchain.schema import Document
 from pypdf import PdfReader
+import textwrap
 
+st.set_page_config(layout="wide")
 #Creating the chatbot interface
 st.title("Mobius: LLM-Powered Chatbot")
-#st.subheader("AVA-Abonia Virtual Assistant")
 
 # Storing the chat
 if 'generated' not in st.session_state:
@@ -18,6 +19,9 @@ if 'generated' not in st.session_state:
 
 if 'past' not in st.session_state:
     st.session_state['past'] = []
+
+if 'citation' not in st.session_state:
+    st.session_state['citation'] = []
 
 # Define a function to clear the input text
 def clear_input_text():
@@ -84,8 +88,6 @@ import docx2txt
 
 def parse_docx(file):
     text_content = docx2txt.process(file)
-    #doc = docx.Document(file)
-    #text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
     return text_content
 
 def convert_document_to_dict(document):
@@ -94,15 +96,17 @@ def convert_document_to_dict(document):
         'metadata': document.metadata,  # assuming this is already a dictionary
     }
 
-max_length = 100
-
 def main():
-    user_input = get_text()
-    uploaded_file = st.file_uploader("**Upload Your PDF/DOCX/TXT File**", type=['pdf', 'docx', 'txt'])
+
+    with st.container():
+        col1, col2, col3 = st.columns((25,50,25))
+
+        with col2:
+            user_input = get_text()
+            uploaded_file = st.file_uploader("**Upload Your PDF/DOCX/TXT File**", type=['pdf', 'docx', 'txt'])
+    st.markdown("""---""")
 
     if user_input:
-   #     doc = parse_pdf(uploaded_file)
-    #    pages = text_to_docs(doc)
         if uploaded_file:
             file_extension = uploaded_file.name.split(".")[-1].lower()
             if file_extension == 'pdf':
@@ -122,21 +126,33 @@ def main():
             st.session_state.generated.append(output)
          #   converted_sources = [convert_document_to_dict(doc) for doc in sources]
             converted_sources = [doc.page_content for doc in sources]
-            st.session_state.generated.append(converted_sources)
-         #   if converted_sources:
-          #      partial_string = converted_sources[0][:max_length]
-           #     st.session_state.generated.append(partial_string)
-           # st.session_state.generated.append(sources)
-  #  if st.session_state['generated']:
-   #     min_length = min(len(st.session_state['generated']), len(st.session_state['past']))
-   #     for i in range(min_length - 1, -1, -1):
-   #         message(st.session_state["generated"][i], key=str(i))
-   #         message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+            st.session_state.citation.append(converted_sources)
 
-    if st.session_state['generated']:
-        for i in range(len(st.session_state['generated'])-1, -1, -1):
-            message(st.session_state["generated"][i], key=str(i))
-        message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+            with st.container():
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.title("Chat")
+                with col2:
+                    st.title("Citation")
+
+
+    with st.container():
+        col1, col2 = st.columns(2, gap="large")
+
+        if st.session_state['generated']:
+            for i in range(len(st.session_state['generated'])-1, -1, -1):
+                with col1:
+                    message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+                    message(st.session_state["generated"][i], key=str(i))
+                with col2:
+                    for item in st.session_state["citation"][i]:
+                        #wrapped_string = textwrap.fill(item, width=50, break_long_words=True)
+                        st.info(str(item), icon="ℹ️")
+
+    # if st.session_state['generated']:
+    #     for i in range(len(st.session_state['generated'])-1, -1, -1):
+    #         message(st.session_state["generated"][i], key=str(i))
+    #     message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
 
 # Run the app
 if __name__ == "__main__":
