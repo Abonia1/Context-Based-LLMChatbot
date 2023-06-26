@@ -11,7 +11,8 @@ import textwrap
 
 st.set_page_config(layout="wide")
 #Creating the chatbot interface
-st.title("Mobius: LLM-Powered Chatbot")
+#st.title("Mobius: LLM-Powered Chatbot")
+st.markdown("<h1 style='text-align: center; color: black;'>Mobius: LLM-Powered Chatbot</h1>", unsafe_allow_html=True)
 
 # Storing the chat
 if 'generated' not in st.session_state:
