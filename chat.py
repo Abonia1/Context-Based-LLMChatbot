@@ -158,7 +158,7 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
             temperature=0,
             max_tokens=300,
             batch_size=50,
-        ), chain_type="map_reduce", retriever=retriever, return_source_documents=True)
+        ), chain_type="stuff", retriever=retriever, return_source_documents=True)
     #query = "How many AI publications in 2021?"
     result = qa({"query": prompt})
 
