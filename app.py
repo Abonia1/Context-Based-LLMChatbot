@@ -13,7 +13,7 @@ st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", page_icon="data:image/png;
 #Creating the chatbot interface
 #st.title("Mobius: LLM-Powered Chatbot")
 st.markdown("""
-<h1 style='text-align: center;'>Mobius: LLM-Powered Chatbot</h1>
+<h1 style='text-align: center; color: blue;'>Mobius: LLM-Powered Chatbot</h1>
 <style>
     .katex .base {
         width: 100%;
@@ -83,7 +83,7 @@ def text_to_docs(text: str) -> List[Document]:
 
     for doc in page_docs:
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=2000,
+            chunk_size=700,
             separators=["\n\n", "\n", ".", "!", "?", ",", " ", ""],
             chunk_overlap=0,
         )
@@ -133,7 +133,8 @@ def main():
             else:
                 st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
 
-            output, sources = chat.answer(user_input, pages)
+            #output, sources = chat.answer(user_input, pages)
+            output, sources = chat.answer_Faiss(user_input, pages)
             # store the output
             st.session_state.past.append(user_input)
             st.session_state.generated.append(output)
