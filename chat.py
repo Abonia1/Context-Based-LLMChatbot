@@ -169,3 +169,41 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
     sources = result['source_documents']
 
     return answer, sources
+
+
+
+def answer_llm_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
+
+    from langchain.chains import RetrievalQA
+    from langchain.indexes import VectorstoreIndexCreator
+    from langchain.text_splitter import CharacterTextSplitter
+    from langchain.embeddings import OpenAIEmbeddings
+    from langchain.vectorstores import FAISS
+    
+    from llm_wrapper.llm_wrapper import IdiomaLLM
+
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    texts = text_splitter.split_documents(documents)
+    # select which embeddings we want to use
+    embeddings = OpenAIEmbeddings(openai_api_key=config.OPENAI_API_KEY)
+    # create the vectorestore to use as the index
+    docsearch = FAISS.from_documents(texts, embeddings)
+    # expose this index in a retriever interface
+    retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
+
+    llm = IdiomaLLM(ob_url="https://voters-marsh-drawn-pledge.trycloudflare.com/api/v1/generate")
+    
+    # create a chain to answer questions 
+    qa = RetrievalQA.from_chain_type(
+        llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
+    #query = "How many AI publications in 2021?"
+    result = qa({"query": prompt})
+
+ #   prompt_template = PromptTemplate(template=config.prompt_template, input_variables=["context", "question"])
+
+    answer = result["result"]
+
+    sources = result['source_documents']
+
+    return answer, sources
+
