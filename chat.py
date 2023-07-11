@@ -191,7 +191,7 @@ def answer_llm_Faiss(prompt: str, documents: List[Document], persist_directory: 
     # expose this index in a retriever interface
     retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
 
-    llm = IdiomaLLM(ob_url="https://voters-marsh-drawn-pledge.trycloudflare.com/api/v1/generate")
+    llm = IdiomaLLM()
     
     # create a chain to answer questions 
     qa = RetrievalQA.from_chain_type(

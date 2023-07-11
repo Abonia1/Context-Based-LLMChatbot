@@ -134,7 +134,8 @@ def main():
                 st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
 
             #output, sources = chat.answer(user_input, pages)
-            output, sources = chat.answer_Faiss(user_input, pages)
+            #output, sources = chat.answer_Faiss(user_input, pages)
+            output, sources = chat.answer_llm_Faiss(user_input, pages)
             # store the output
             st.session_state.past.append(user_input)
             st.session_state.generated.append(output)

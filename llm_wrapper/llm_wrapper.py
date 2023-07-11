@@ -4,9 +4,14 @@ from typing import Any, List, Mapping, Optional
 import httpx
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
+import config
 
-class IdiomaLLM(LLM, ob_url: str):
-    #ob_url: str = "https://voters-marsh-drawn-pledge.trycloudflare.com/api/v1/generate"
+class IdiomaLLM(LLM):
+    ob_url: str = config.LLM_API
+
+    # def __init__(self, ob_url: str):
+    #     super().__init__()
+    #     self.ob_url = ob_url
 
     @property
     def _llm_type(self) -> str:
@@ -21,7 +26,7 @@ class IdiomaLLM(LLM, ob_url: str):
     ) -> str:
         with httpx.Client(timeout=60) as client:
             request_data = {
-                "prompt": prompt,
+                "question": prompt,
                 "max_new_tokens": 250,
                 "do_sample": True,
                 "temperature": 1.3,
@@ -46,7 +51,15 @@ class IdiomaLLM(LLM, ob_url: str):
             }
             r = client.post(self.ob_url, json=request_data)
             data = r.json()
-            return data.get("results")[0].get("text")
+            results = data.get("answer")
+            if results is None or len(results) == 0:
+                raise ValueError("No results found in the API response.")
+            #text = results[0].get("text")
+            text = results
+            if text is None:
+                raise ValueError("No text found in the API response.")
+            return text
+            #return data.get("results")[0].get("text")
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
