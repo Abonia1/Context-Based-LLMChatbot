@@ -11,6 +11,7 @@ import nltk
 import config
 import logging
 from typing import List
+from langchain.llms import Replicate
 
 # Initialize logging with the specified configuration
 logging.basicConfig(
@@ -207,3 +208,118 @@ def answer_llm_Faiss(prompt: str, documents: List[Document], persist_directory: 
 
     return answer, sources
 
+
+def answer_replicate_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
+
+    from langchain.chains import RetrievalQA
+    from langchain.indexes import VectorstoreIndexCreator
+    from langchain.text_splitter import CharacterTextSplitter
+    from langchain.embeddings import OpenAIEmbeddings
+    from langchain.vectorstores import FAISS
+    
+    #from llm_wrapper.llm_wrapper import IdiomaLLM
+
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    texts = text_splitter.split_documents(documents)
+    # select which embeddings we want to use
+    embeddings = OpenAIEmbeddings(openai_api_key=config.OPENAI_API_KEY)
+    # create the vectorestore to use as the index
+    docsearch = FAISS.from_documents(texts, embeddings)
+    # expose this index in a retriever interface
+    retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
+
+    llm = Replicate(
+        model="replicate/llama70b-v2-chat:2d19859030ff705a87c746f7e96eea03aefb71f166725aee39692f1476566d48", #a16z-infra/llama13b-v2-chat:df7690f1994d94e96ad9d568eac121aecf50684a0b0963b25a41cc40061269e5",
+        input={"temperature": 0.75, "max_length": 500, "top_p": 1},
+        )
+    
+    from langchain.prompts import PromptTemplate
+   # from langchain import LLMChain
+    # prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    # {context}
+    # Question: {question}
+    # Answer in Italian:"""
+    # PROMPT = PromptTemplate(
+    #     template=prompt_template, input_variables=["context", "question"]
+    # )
+
+    # prompt_template = """<s>[INST] <<SYS>>
+    # You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
+
+    # If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
+    # <</SYS>>
+
+    # [/INST]</s>
+    # <s>[INST] 
+    # {question}  
+    # DOCUMENTS:
+    # =========
+    # {context}
+    # ========= 
+    #    [/INST]
+    # """
+
+    prompt_template = """Use the following pieces of information to answer the user's question.
+        If you don't know the answer, just say that you don't know, don't try to make up an answer.
+        Context: {context}
+        Question: {question}
+        Only return the helpful answer below and nothing else.
+        Helpful answer:
+        """
+
+    PROMPT_TEMPLATE = PromptTemplate(
+        template=prompt_template, input_variables=["context", "question"]
+    )
+
+    # doc_chain = load_qa_chain(
+    #     llm=llm,
+    #     chain_type="stuff",
+    #     prompt=PROMPT_TEMPLATE,
+    # )
+
+    # Log a message indicating the number of chunks to be considered when answering the user's query.
+    LOGGER.info(f"The top {config.k} chunks are considered to answer the user's query.")
+
+    qa = RetrievalQA.from_chain_type(llm=llm,
+                                       chain_type='stuff',
+                                       retriever=retriever,
+                                       chain_type_kwargs={'prompt': PROMPT_TEMPLATE})
+            # return_source_documents=True,
+    # Create a VectorDBQA object using a vector store, a QA chain, and a number of chunks to consider.
+ #   qa = VectorDBQA(vectorstore=docsearch, combine_documents_chain=doc_chain, k=config.k)
+
+    # Call the VectorDBQA object to generate an answer to the prompt.
+    result1 = qa({"query": prompt})
+    answer = result1["result"]
+
+
+   # chain_type_kwargs = {"query": PROMPT_TEMPLATE}
+    # chain_type_kwargs = {
+    #     "llm_chain": llm_chain,
+    #     "doc_retriever": retriever 
+    # }
+
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=llm, chain_type="stuff", retriever=retriever, chain_type_kwargs=chain_type_kwargs)
+    
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=llm,
+    #     chain_type="stuff",
+    #     retriever=retriever,
+    #     chain_type_kwargs=chain_type_kwargs
+    # )
+  #  answer = qa.run(prompt)
+
+    # create a chain to answer questions 
+    qa = RetrievalQA.from_chain_type(
+        llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
+    #query = "How many AI publications in 2021?"
+    result = qa({"query": prompt})
+
+ #   prompt_template = PromptTemplate(template=config.prompt_template, input_variables=["context", "question"])
+
+    #answer = result["result"]
+
+    sources = result['source_documents']
+
+    return answer, sources
