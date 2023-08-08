@@ -11,12 +11,13 @@ import textwrap
 import os
 #import replicate
 import config
+from db import *
 
 st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", page_icon="data:image/png;base64,/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAcFBggJ/8QAMBAAAgEDAwEECAcAAAAAAAAAAQIDBAURAAYSIQcIIjETFBUyQVFhcSNDYoGRkqH/xAAZAQACAwEAAAAAAAAAAAAAAAACBAEFBgD/xAAlEQACAgECBgMBAQAAAAAAAAABAgADBBEhBRITIlGBMUGRMtH/2gAMAwEAAhEDEQA/AOVWunSfoOz7fd0jEtu2be6mMjkGioJWBH0PHro1qsfdVJ9Q1rdt1Un1Arttjclhx7dsFxt3I4HrdLJDn+wGoZWU6MNIJUrsRpI3QyIzuyW10UdtuN+eSCK6tURUlqabiFJCs8/Fm6JJxMQVjj3mAIJGnsBVNnM41AjuCqmzmYagRu2251FinjO6KyntksgDAXGsjgdgRkHEjAnpjrrTJn0V9rOBNGudQnazgR4bH3HS3OgVDUUlyt8+Y2AljqqeT5qQCyHz6g/TTy2UZabEMP2MB6cpdiGH7FD3r+7ps207Oftd7OqGK0CjmiivFsh6U5SVgiTwr+WQ5VWQeEhgVC4IOa4tw1McdarYfY/yZ7iWCtA6tew8TPVveSTatr9ko88dG9S9esQ5PDK7rhmUdeJjSMBvLIYZyMaqsezptEMezkaW7a+6qmmUU61xRBkGIuCgwOvhPTzPy+GtFQyWDuGsv6WSwdw1jm2fueWOn9KzJDSRfiPJxSKFMgZdm8KDyGST8BqzranGXm2UehH1NNC67KPQlJ7wveJtm49oP2ZbRqRWwVU0cl0rlz6IrE3JIYiffHMKzPgDwqFyMnWe4txNMoCmn+fs+ZQ8Tz0yB0qvjz5mbqaqqaOZaikqJIJU9143KsPsR1GqOU8mYd+bwgXim4aw/qZ+Tfycn/dGLHX4Jhix1+CYBcr/AHy88RdrxW1gTqonnaQL9gTgftoWYtux1gli25MA1Eif/9k=", layout="wide")
 #Creating the chatbot interface
 #st.title("Mobius: LLM-Powered Chatbot")
 st.markdown("""
-<h1 style='text-align: center; color: blue;'>Mobius: LLM-Powered Chatbot</h1>
+<h1 style='text-align: center; color: teal;'>Mobius: LLM-Powered Chatbot</h1>
 <style>
     .katex .base {
         width: 100%;
@@ -41,7 +42,7 @@ if 'citation' not in st.session_state:
 
 ###Global variables:###
 #REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN', default='')
-os.environ["REPLICATE_API_TOKEN"] = ""
+os.environ["REPLICATE_API_TOKEN"] = "r8_E0KsK9OwgkvQZFImixANLwT2zza8FuB2PFaK5"
 # #Your your (Replicate) models' endpoints:
 # REPLICATE_MODEL_ENDPOINT7B = os.environ.get('REPLICATE_MODEL_ENDPOINT7B', default='')
 # REPLICATE_MODEL_ENDPOINT13B = os.environ.get('REPLICATE_MODEL_ENDPOINT13B', default='')
@@ -130,6 +131,7 @@ def convert_document_to_dict(document):
     }
 
 def main():
+    create_db()
 
     with st.container():
         col1, col2, col3 = st.columns((25,50,25))
@@ -163,6 +165,9 @@ def main():
          #   converted_sources = [convert_document_to_dict(doc) for doc in sources]
             converted_sources = [doc.page_content for doc in sources]
             st.session_state.citation.append(converted_sources)
+
+            # Log to database
+            log_to_database(user_input, output, converted_sources)
 
             with st.container():
                 col1, col2 = st.columns(2)
