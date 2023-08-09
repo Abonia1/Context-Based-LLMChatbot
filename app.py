@@ -220,7 +220,7 @@ def main():
             st.session_state.citation.append(converted_sources)
 
             # Log to database
-            log_to_database(user_input, output, converted_sources)
+            log_to_database(user_input, output, converted_sources, document_path)
             
     with st.container():
         col1, col2 = st.columns(2, gap="large")
