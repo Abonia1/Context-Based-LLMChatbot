@@ -11,3 +11,4 @@ chromadb
 tiktoken
 httpx
 faiss-cpu
+st-pages
