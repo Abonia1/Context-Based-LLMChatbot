@@ -14,6 +14,7 @@ import config
 from db import *
 from st_pages import hide_pages
 import os
+import docx2txt
 
 st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", 
                 #    initial_sidebar_state="collapsed",
@@ -126,8 +127,6 @@ def text_to_docs(text: str) -> List[Document]:
             doc.metadata["source"] = f"{doc.metadata['page']}-{doc.metadata['chunk']}"
             doc_chunks.append(doc)
     return doc_chunks
-
-import docx2txt
 
 def parse_docx(file):
     text_content = docx2txt.process(file)
