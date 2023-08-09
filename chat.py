@@ -12,6 +12,7 @@ from langchain.chains import RetrievalQA
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
+from langchain.chains import RetrievalQAWithSourcesChain
 
 # import os
 # import nltk
@@ -142,9 +143,6 @@ def answer_RetrievalQA(prompt: str, documents: List[Document], persist_directory
 
 
 def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
-
-    
-
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     texts = text_splitter.split_documents(documents)
     # select which embeddings we want to use
@@ -174,6 +172,37 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
 
     return answer, sources
 
+
+def answer_Faiss_page(prompt: str, retriever, persist_directory: str = config.PERSIST_DIR):
+
+    chain = RetrievalQAWithSourcesChain.from_chain_type(
+            llm=OpenAI(
+                openai_api_key = config.OPENAI_API_KEY,
+                model_name="text-davinci-003",
+                temperature=0,
+                max_tokens=300,
+                batch_size=50,
+            ), chain_type="stuff", retriever=retriever)
+    
+    result = chain({"question": prompt}, return_only_outputs=True)
+    page_number = result['sources']
+    
+    # create a chain to answer questions 
+    qa = RetrievalQA.from_chain_type(
+        llm=OpenAI(
+            openai_api_key = config.OPENAI_API_KEY,
+            model_name="text-davinci-003",
+            temperature=0,
+            max_tokens=300,
+            batch_size=50,
+        ), chain_type="stuff", retriever=retriever, return_source_documents=True)
+    result = qa({"query": prompt})
+
+    answer = result["result"]
+
+    sources = result['source_documents']
+
+    return answer, sources, page_number
 
 
 def answer_llm_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):

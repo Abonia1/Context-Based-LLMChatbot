@@ -15,6 +15,18 @@ from db import *
 from st_pages import hide_pages
 import os
 import docx2txt
+import json
+from pathlib import Path
+import pdfkit
+import fpdf
+from fpdf import FPDF
+import reportlab
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+import types
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
 
 st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", 
                 #    initial_sidebar_state="collapsed",
@@ -49,6 +61,9 @@ if 'citation' not in st.session_state:
 
 if 'document' not in st.session_state:
     st.session_state['document'] = None
+    
+if 'page' not in st.session_state:
+    st.session_state['page'] = []
 
 ###Global variables:###
 #REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN', default='')
@@ -156,6 +171,104 @@ def save_file(file):
 
     return str(file_path)
 
+def save_pdf(app_state):
+    pdf = FPDF()
+
+    # Add page and set font
+    pdf.add_page() 
+    pdf.set_font("Times", size=12)
+
+    # Split app state into lines 
+    for line in app_state.split("\n"):
+        pdf.cell(200, 10, txt=line, ln=1, align="L")
+
+    # Save PDF
+    pdf_path = "chat_history.pdf"
+    with open(pdf_path, "wb") as f:
+        pdf.output(pdf_path)
+
+
+def generate_pdf(user_input, output, source):
+    #pdf = FPDF()
+    pdf = CustomPDF()
+    pdf.set_auto_page_break(True)
+    pdf.add_page()
+
+    #pdf.set_encoding('UTF-8') 
+    for i in range(len(user_input)):
+        pdf.set_font("Times", size=12)
+        pdf.cell(200, 10, txt=user_input[i], ln=1, align="L")
+        pdf.cell(200, 10, txt=output[i], ln=1, align="L") 
+        if source[i]:
+            pdf.multi_cell(200, 10, txt=' '.join(source[i]), align="L")
+        pdf.output("chat_history.pdf")
+
+
+def generate_pdf_session(session_state):
+    pdf = FPDF()
+    pdf.add_page() 
+
+    user_input = json.loads(session_state)["past"]
+    responses = json.loads(session_state)["generated"]
+    sources = json.loads(session_state)["citation"]
+
+   # pdf = CustomPDF()
+    pdf.set_auto_page_break(True)
+    pdf.set_encoding('UTF-8') 
+    pdf.set_font("Times", size=12)
+
+    for i in range(len(user_input)):
+        pdf.cell(200, 10, txt=user_input[i], ln=1, align="L") 
+        pdf.cell(200, 10, txt=responses[i], ln=1, align="L")
+        pdf.cell(200, 10, txt=str(sources[i]), ln=1, align="L")
+
+    pdf.output("chat_history.pdf")
+
+
+
+def generate_pdf_reportlab(session_state):
+
+    pdf = SimpleDocTemplate("chat_history.pdf", pagesize=letter)
+
+    user_input = json.loads(session_state)["past"]
+    responses = json.loads(session_state)["generated"]
+    sources = json.loads(session_state)["citation"]
+    page_number = json.loads(session_state)["page"]
+
+    # Get a sample style
+    styles = getSampleStyleSheet()
+    styleN = styles['BodyText']
+    story = []
+
+    for i in range(len(user_input)):
+        formatted_text = f'<b>Question:</b> {user_input[i]}'
+        story.append(Paragraph(formatted_text, styleN))
+        story.append(Spacer(1, 12)) 
+
+        formatted_text = f'<b>Response:</b> {responses[i]}'
+        story.append(Paragraph(formatted_text, styleN))
+        story.append(Spacer(1, 12)) 
+
+        formatted_text = f'<b>Source Pages:</b> {page_number[i]}'
+        story.append(Paragraph(formatted_text, styleN))
+        story.append(Spacer(1, 12)) 
+
+        formatted_text = f'<b>Citations:</b>'
+        story.append(Paragraph(formatted_text, styleN))
+
+        count = 1
+        for item in sources[i]:
+            formatted_text = f'<b>Citation {count}:</b> {item}'
+            story.append(Paragraph(formatted_text, styleN))
+            story.append(Spacer(1, 6))
+            count += 1
+
+        story.append(Spacer(1, 24))
+
+
+    pdf.build(story)
+
+
 def main():
     create_db()
 
@@ -208,32 +321,70 @@ def main():
             pages = document['pages']
             document_path = document['file_path']
             retriever = document['retriever']
-            #output, sources = chat.answer(user_input, pages)
-            #output, sources = chat.answer_Faiss(user_input, pages)
-            #output, sources = chat.answer_llm_Faiss(user_input, pages)
-            output, sources = chat.answer_replicate_Faiss(user_input, retriever)
+
+            # Call for output
+            output, sources, page_number = chat.answer_Faiss_page(user_input, retriever)
+
             # store the output
             st.session_state.past.append(user_input)
             st.session_state.generated.append(output)
             # converted_sources = [convert_document_to_dict(doc) for doc in sources]
             converted_sources = [doc.page_content for doc in sources]
             st.session_state.citation.append(converted_sources)
+            st.session_state.page.append(page_number)
 
             # Log to database
             log_to_database(user_input, output, converted_sources, document_path)
             
     with st.container():
         col1, col2 = st.columns(2, gap="large")
+        #print("session is: ", st.session_state)
+        required_keys = ['generated', 'past', 'citation', 'input', 'page']
 
-        if st.session_state['generated']:
+        if all(st.session_state.get(key) for key in required_keys):
+
             for i in range(len(st.session_state['generated'])-1, -1, -1):
+                #app_state = json.dumps(st.session_state._state.to_dict())
                 with col1:
                     message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
                     message(st.session_state["generated"][i], key=str(i))
                 with col2:
+                  #  item_list = []
                     for item in st.session_state["citation"][i]:
-                        #wrapped_string = textwrap.fill(item, width=50, break_long_words=True)
                         st.info(str(item), icon="ℹ️")
+                       
+                    #app_state_list["sources"] = item_list
+    
+    # Button to trigger PDF generation
+    # if "pdf_generated" not in st.session_state:
+    #     st.session_state["pdf_generated"] = False
+    #from streamlit import debouncer
+    # import asyncio
+
+    # async def debounced(func, wait):
+    #     await asyncio.sleep(wait)
+    #     func()
+
+    #debounced_click = debouncer(generate_pdf_reportlab, "button") 
+    with st.sidebar:
+        if st.button('Save PDF'):
+        # if not st.session_state["pdf_generated"]:
+
+        #asyncio.run(debounced(generate_pdf_reportlab(session_state), 0.5))
+            generate_pdf_reportlab(session_state)
+            #asyncio.run(debounced_click(session_state))
+            #generate_pdf_reportlab(session_state)
+            #st.session_state["pdf_generated"] = True
+
+            # Download button
+            with open("chat_history.pdf", "rb") as file:
+                st.download_button(
+                    label="Download PDF",
+                    data=file,
+                    file_name="chat_history.pdf",
+                    mime="application/octet-stream"
+                )
+    
 
     # if st.session_state['generated']:
     #     for i in range(len(st.session_state['generated'])-1, -1, -1):
