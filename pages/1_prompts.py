@@ -67,6 +67,7 @@ if check_password():
         id, prompt, answer, citations = log
 
         citations = json.loads(citations)
+        col1, col2, col3 = st.columns((4, 48, 48))
 
         with col1:
             st.markdown(f"### {id}")
