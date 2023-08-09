@@ -1,13 +1,20 @@
-from langchain.embeddings.openai import OpenAIEmbeddings
+# from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import CharacterTextSplitter
 from langchain import OpenAI, VectorDBQA
-from langchain.document_loaders import DirectoryLoader
+# from langchain.document_loaders import DirectoryLoader
 from langchain.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
 from langchain.schema import Document
+
+from langchain.chains import RetrievalQA
+# from langchain.indexes import VectorstoreIndexCreator
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.prompts import PromptTemplate
+
 import os
-import nltk
+# import nltk
 import config
 import logging
 from typing import List
@@ -136,11 +143,7 @@ def answer_RetrievalQA(prompt: str, documents: List[Document], persist_directory
 
 def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
 
-    from langchain.chains import RetrievalQA
-    from langchain.indexes import VectorstoreIndexCreator
-    from langchain.text_splitter import CharacterTextSplitter
-    from langchain.embeddings import OpenAIEmbeddings
-    from langchain.vectorstores import FAISS
+    
 
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     texts = text_splitter.split_documents(documents)
@@ -208,17 +211,7 @@ def answer_llm_Faiss(prompt: str, documents: List[Document], persist_directory: 
 
     return answer, sources
 
-
-def answer_replicate_Faiss(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
-
-    from langchain.chains import RetrievalQA
-    from langchain.indexes import VectorstoreIndexCreator
-    from langchain.text_splitter import CharacterTextSplitter
-    from langchain.embeddings import OpenAIEmbeddings
-    from langchain.vectorstores import FAISS
-    
-    #from llm_wrapper.llm_wrapper import IdiomaLLM
-
+def embed_document(documents):
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     texts = text_splitter.split_documents(documents)
     # select which embeddings we want to use
@@ -228,12 +221,18 @@ def answer_replicate_Faiss(prompt: str, documents: List[Document], persist_direc
     # expose this index in a retriever interface
     retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
 
+    return retriever
+    
+
+def answer_replicate_Faiss(prompt: str, retriever, persist_directory: str = config.PERSIST_DIR):
+        
+    #from llm_wrapper.llm_wrapper import IdiomaLLM
+
     llm = Replicate(
         model="replicate/llama70b-v2-chat:2d19859030ff705a87c746f7e96eea03aefb71f166725aee39692f1476566d48", #a16z-infra/llama13b-v2-chat:df7690f1994d94e96ad9d568eac121aecf50684a0b0963b25a41cc40061269e5",
         input={"temperature": 0.75, "max_length": 500, "top_p": 1},
         )
     
-    from langchain.prompts import PromptTemplate
    # from langchain import LLMChain
     # prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
     # {context}

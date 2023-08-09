@@ -185,10 +185,13 @@ def main():
             file_path = save_file(uploaded_file)
             print(f'File path: {file_path}')
 
+            retriever = chat.embed_document(pages)
+
             if file_path:
                 st.session_state.document = {
                     "pages": pages,
-                    "file_path": file_path
+                    "file_path": file_path,
+                    "retriever": retriever
                 }
             else:
                 st.error("File uploading failed. Try again.")
@@ -205,10 +208,11 @@ def main():
 
             pages = document['pages']
             document_path = document['file_path']
+            retriever = document['retriever']
             #output, sources = chat.answer(user_input, pages)
             #output, sources = chat.answer_Faiss(user_input, pages)
             #output, sources = chat.answer_llm_Faiss(user_input, pages)
-            output, sources = chat.answer_replicate_Faiss(user_input, pages)
+            output, sources = chat.answer_replicate_Faiss(user_input, retriever)
             # store the output
             st.session_state.past.append(user_input)
             st.session_state.generated.append(output)
@@ -218,36 +222,6 @@ def main():
 
             # Log to database
             log_to_database(user_input, output, converted_sources)
-    # if user_input:
-    #     if uploaded_file:
-    #         file_extension = uploaded_file.name.split(".")[-1].lower()
-    #         if file_extension == 'pdf':
-    #             doc = parse_pdf(uploaded_file)
-    #             pages = text_to_docs(doc)
-    #         elif file_extension == 'docx':
-    #             doc = parse_docx(uploaded_file)
-    #             pages = text_to_docs(doc)
-    #         elif file_extension == 'txt':
-    #             pages = text_to_docs(uploaded_file)
-    #         else:
-    #             st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
-
-    #         print(f"File success: {save_file(uploaded_file)}")
-
-    #         #output, sources = chat.answer(user_input, pages)
-    #         #output, sources = chat.answer_Faiss(user_input, pages)
-    #         #output, sources = chat.answer_llm_Faiss(user_input, pages)
-    #         output, sources = chat.answer_replicate_Faiss(user_input, pages)
-    #         # store the output
-    #         st.session_state.past.append(user_input)
-    #         st.session_state.generated.append(output)
-    #      #   converted_sources = [convert_document_to_dict(doc) for doc in sources]
-    #         converted_sources = [doc.page_content for doc in sources]
-    #         st.session_state.citation.append(converted_sources)
-
-    #         # Log to database
-    #         log_to_database(user_input, output, converted_sources)
-
             
     with st.container():
         col1, col2 = st.columns(2, gap="large")
