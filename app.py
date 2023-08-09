@@ -348,10 +348,10 @@ def main():
                 with col1:
                     message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
                     message(st.session_state["generated"][i], key=str(i))
-                with col2:
-                  #  item_list = []
-                    for item in st.session_state["citation"][i]:
-                        st.info(str(item), icon="ℹ️")
+            with col2:
+                #  item_list = []
+                for item in st.session_state["citation"][-1]:
+                    st.info(str(item), icon="ℹ️")
                        
                     #app_state_list["sources"] = item_list
     
