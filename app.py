@@ -12,8 +12,14 @@ import os
 #import replicate
 import config
 from db import *
+from st_pages import hide_pages
+import os
 
-st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", page_icon="data:image/png;base64,/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAcFBggJ/8QAMBAAAgEDAwEECAcAAAAAAAAAAQIDBAURAAYSIQcIIjETFBUyQVFhcSNDYoGRkqH/xAAZAQACAwEAAAAAAAAAAAAAAAACBAEFBgD/xAAlEQACAgECBgMBAQAAAAAAAAABAgADBBEhBRITIlGBMUGRMtH/2gAMAwEAAhEDEQA/AOVWunSfoOz7fd0jEtu2be6mMjkGioJWBH0PHro1qsfdVJ9Q1rdt1Un1Arttjclhx7dsFxt3I4HrdLJDn+wGoZWU6MNIJUrsRpI3QyIzuyW10UdtuN+eSCK6tURUlqabiFJCs8/Fm6JJxMQVjj3mAIJGnsBVNnM41AjuCqmzmYagRu2251FinjO6KyntksgDAXGsjgdgRkHEjAnpjrrTJn0V9rOBNGudQnazgR4bH3HS3OgVDUUlyt8+Y2AljqqeT5qQCyHz6g/TTy2UZabEMP2MB6cpdiGH7FD3r+7ps207Oftd7OqGK0CjmiivFsh6U5SVgiTwr+WQ5VWQeEhgVC4IOa4tw1McdarYfY/yZ7iWCtA6tew8TPVveSTatr9ko88dG9S9esQ5PDK7rhmUdeJjSMBvLIYZyMaqsezptEMezkaW7a+6qmmUU61xRBkGIuCgwOvhPTzPy+GtFQyWDuGsv6WSwdw1jm2fueWOn9KzJDSRfiPJxSKFMgZdm8KDyGST8BqzranGXm2UehH1NNC67KPQlJ7wveJtm49oP2ZbRqRWwVU0cl0rlz6IrE3JIYiffHMKzPgDwqFyMnWe4txNMoCmn+fs+ZQ8Tz0yB0qvjz5mbqaqqaOZaikqJIJU9143KsPsR1GqOU8mYd+bwgXim4aw/qZ+Tfycn/dGLHX4Jhix1+CYBcr/AHy88RdrxW1gTqonnaQL9gTgftoWYtux1gli25MA1Eif/9k=", layout="wide")
+st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", 
+                #    initial_sidebar_state="collapsed",
+                   page_icon="data:image/png;base64,/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAcFBggJ/8QAMBAAAgEDAwEECAcAAAAAAAAAAQIDBAURAAYSIQcIIjETFBUyQVFhcSNDYoGRkqH/xAAZAQACAwEAAAAAAAAAAAAAAAACBAEFBgD/xAAlEQACAgECBgMBAQAAAAAAAAABAgADBBEhBRITIlGBMUGRMtH/2gAMAwEAAhEDEQA/AOVWunSfoOz7fd0jEtu2be6mMjkGioJWBH0PHro1qsfdVJ9Q1rdt1Un1Arttjclhx7dsFxt3I4HrdLJDn+wGoZWU6MNIJUrsRpI3QyIzuyW10UdtuN+eSCK6tURUlqabiFJCs8/Fm6JJxMQVjj3mAIJGnsBVNnM41AjuCqmzmYagRu2251FinjO6KyntksgDAXGsjgdgRkHEjAnpjrrTJn0V9rOBNGudQnazgR4bH3HS3OgVDUUlyt8+Y2AljqqeT5qQCyHz6g/TTy2UZabEMP2MB6cpdiGH7FD3r+7ps207Oftd7OqGK0CjmiivFsh6U5SVgiTwr+WQ5VWQeEhgVC4IOa4tw1McdarYfY/yZ7iWCtA6tew8TPVveSTatr9ko88dG9S9esQ5PDK7rhmUdeJjSMBvLIYZyMaqsezptEMezkaW7a+6qmmUU61xRBkGIuCgwOvhPTzPy+GtFQyWDuGsv6WSwdw1jm2fueWOn9KzJDSRfiPJxSKFMgZdm8KDyGST8BqzranGXm2UehH1NNC67KPQlJ7wveJtm49oP2ZbRqRWwVU0cl0rlz6IrE3JIYiffHMKzPgDwqFyMnWe4txNMoCmn+fs+ZQ8Tz0yB0qvjz5mbqaqqaOZaikqJIJU9143KsPsR1GqOU8mYd+bwgXim4aw/qZ+Tfycn/dGLHX4Jhix1+CYBcr/AHy88RdrxW1gTqonnaQL9gTgftoWYtux1gli25MA1Eif/9k=", layout="wide")
+
+hide_pages(['prompts'])
 #Creating the chatbot interface
 #st.title("Mobius: LLM-Powered Chatbot")
 st.markdown("""
@@ -130,6 +136,23 @@ def convert_document_to_dict(document):
         'metadata': document.metadata,  # assuming this is already a dictionary
     }
 
+def save_file(file):
+    try:
+        base_name, extension = os.path.splitext(file.name)
+        file_path = os.path.join("doc/", file.name)
+
+        counter = 1
+        while os.path.exists(file_path):
+            new_file_name = f"{base_name}_{counter}{extension}"
+            file_path = os.path.join("doc/", new_file_name)
+            counter += 1
+        with open(file_path, "wb") as f:
+            f.write(file.read())
+    except:
+        return False
+
+    return True
+
 def main():
     create_db()
 
@@ -154,6 +177,8 @@ def main():
                 pages = text_to_docs(uploaded_file)
             else:
                 st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
+
+            print(f"File success: {save_file(uploaded_file)}")
 
             #output, sources = chat.answer(user_input, pages)
             #output, sources = chat.answer_Faiss(user_input, pages)
