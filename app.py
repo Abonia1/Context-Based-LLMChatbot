@@ -46,6 +46,9 @@ if 'past' not in st.session_state:
 if 'citation' not in st.session_state:
     st.session_state['citation'] = []
 
+if 'document' not in st.session_state:
+    st.session_state['document'] = None
+
 ###Global variables:###
 #REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN', default='')
 os.environ["REPLICATE_API_TOKEN"] = "r8_E0KsK9OwgkvQZFImixANLwT2zza8FuB2PFaK5"
@@ -148,10 +151,11 @@ def save_file(file):
             counter += 1
         with open(file_path, "wb") as f:
             f.write(file.read())
-    except:
-        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
-    return True
+    return str(file_path)
 
 def main():
     create_db()
@@ -164,8 +168,8 @@ def main():
             uploaded_file = st.file_uploader("**Upload Your PDF/DOCX/TXT File**", type=['pdf', 'docx', 'txt'])
     st.markdown("""---""")
 
-    if user_input:
-        if uploaded_file:
+    if uploaded_file:
+        if not st.session_state.document:
             file_extension = uploaded_file.name.split(".")[-1].lower()
             if file_extension == 'pdf':
                 doc = parse_pdf(uploaded_file)
@@ -178,21 +182,16 @@ def main():
             else:
                 st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
 
-            print(f"File success: {save_file(uploaded_file)}")
+            file_path = save_file(uploaded_file)
+            print(f'File path: {file_path}')
 
-            #output, sources = chat.answer(user_input, pages)
-            #output, sources = chat.answer_Faiss(user_input, pages)
-            #output, sources = chat.answer_llm_Faiss(user_input, pages)
-            output, sources = chat.answer_replicate_Faiss(user_input, pages)
-            # store the output
-            st.session_state.past.append(user_input)
-            st.session_state.generated.append(output)
-         #   converted_sources = [convert_document_to_dict(doc) for doc in sources]
-            converted_sources = [doc.page_content for doc in sources]
-            st.session_state.citation.append(converted_sources)
-
-            # Log to database
-            log_to_database(user_input, output, converted_sources)
+            if file_path:
+                st.session_state.document = {
+                    "pages": pages,
+                    "file_path": file_path
+                }
+            else:
+                st.error("File uploading failed. Try again.")
 
             with st.container():
                 col1, col2 = st.columns(2)
@@ -200,8 +199,56 @@ def main():
                     st.title("Chat")
                 with col2:
                     st.title("Citation")
+        elif user_input and user_input.strip() != "":
 
+            document = st.session_state.document
 
+            pages = document['pages']
+            document_path = document['file_path']
+            #output, sources = chat.answer(user_input, pages)
+            #output, sources = chat.answer_Faiss(user_input, pages)
+            #output, sources = chat.answer_llm_Faiss(user_input, pages)
+            output, sources = chat.answer_replicate_Faiss(user_input, pages)
+            # store the output
+            st.session_state.past.append(user_input)
+            st.session_state.generated.append(output)
+            # converted_sources = [convert_document_to_dict(doc) for doc in sources]
+            converted_sources = [doc.page_content for doc in sources]
+            st.session_state.citation.append(converted_sources)
+
+            # Log to database
+            log_to_database(user_input, output, converted_sources)
+    # if user_input:
+    #     if uploaded_file:
+    #         file_extension = uploaded_file.name.split(".")[-1].lower()
+    #         if file_extension == 'pdf':
+    #             doc = parse_pdf(uploaded_file)
+    #             pages = text_to_docs(doc)
+    #         elif file_extension == 'docx':
+    #             doc = parse_docx(uploaded_file)
+    #             pages = text_to_docs(doc)
+    #         elif file_extension == 'txt':
+    #             pages = text_to_docs(uploaded_file)
+    #         else:
+    #             st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
+
+    #         print(f"File success: {save_file(uploaded_file)}")
+
+    #         #output, sources = chat.answer(user_input, pages)
+    #         #output, sources = chat.answer_Faiss(user_input, pages)
+    #         #output, sources = chat.answer_llm_Faiss(user_input, pages)
+    #         output, sources = chat.answer_replicate_Faiss(user_input, pages)
+    #         # store the output
+    #         st.session_state.past.append(user_input)
+    #         st.session_state.generated.append(output)
+    #      #   converted_sources = [convert_document_to_dict(doc) for doc in sources]
+    #         converted_sources = [doc.page_content for doc in sources]
+    #         st.session_state.citation.append(converted_sources)
+
+    #         # Log to database
+    #         log_to_database(user_input, output, converted_sources)
+
+            
     with st.container():
         col1, col2 = st.columns(2, gap="large")
 
