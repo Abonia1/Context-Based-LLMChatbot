@@ -1,4 +1,5 @@
-OPENAI_API_KEY = "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"  # replace with your actual OpenAI API key
+OPENAI_API_KEY = "YOUR-OPENAI-API-KEY"
+REPLICATE_API_TOKEN = "REPLICATE-API-KEY"  # replace with your actual OpenAI API key
 LLM_API = "YOUR-LLM-API"
 PERSIST_DIR = "vectorstore"  # replace with the directory where you want to store the vectorstore
 LOGS_FILE = "logs/log.log"  # replace with the path where you want to store the log file
@@ -18,4 +19,4 @@ DOCUMENTS:
 =========
 Finish by proposing your help for anything else.
 """
-k = 6  # number of chunks to consider when generating answer
+k = 4  # number of chunks to consider when generating answer

@@ -67,7 +67,7 @@ if 'page' not in st.session_state:
 
 ###Global variables:###
 #REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN', default='')
-os.environ["REPLICATE_API_TOKEN"] = "r8_E0KsK9OwgkvQZFImixANLwT2zza8FuB2PFaK5"
+os.environ["REPLICATE_API_TOKEN"] = config.REPLICATE_API_TOKEN
 # #Your your (Replicate) models' endpoints:
 # REPLICATE_MODEL_ENDPOINT7B = os.environ.get('REPLICATE_MODEL_ENDPOINT7B', default='')
 # REPLICATE_MODEL_ENDPOINT13B = os.environ.get('REPLICATE_MODEL_ENDPOINT13B', default='')
