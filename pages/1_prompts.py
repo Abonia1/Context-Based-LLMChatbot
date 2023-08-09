@@ -3,6 +3,11 @@ from db import retrieve_logs
 import sqlite3
 import json
 
+def file_download_link(file_path, file_name):
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+    st.download_button(label="Download File", data=file_data, file_name=file_name)
+
 st.set_page_config(layout="wide", page_title="Data Analytics: Prompt DB", page_icon="📝")
 
 st.markdown("""
@@ -64,7 +69,7 @@ if check_password():
         st.markdown("**Answer**")
 
     for log in retrieve_logs():
-        id, prompt, answer, citations = log
+        id, prompt, answer, citations, file_path = log
 
         citations = json.loads(citations)
         col1, col2, col3 = st.columns((4, 48, 48))
@@ -81,6 +86,9 @@ if check_password():
             with st.expander("Citations"):
                 for citation in citations:
                     st.warning(citation)
+            
+            file_name = file_path.split("/")[-1]
+            file_download_link(file_path, file_name)
 
         st.markdown("---")
 
