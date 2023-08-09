@@ -2,3 +2,5 @@
 .env
 logs/
 prompt_logs.db
+doc/
+.streamlit/secrets.toml
