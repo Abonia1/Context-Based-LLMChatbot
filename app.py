@@ -11,13 +11,32 @@ import textwrap
 import os
 #import replicate
 import config
+from db import *
+from st_pages import hide_pages
+import os
+import docx2txt
 import json
+from pathlib import Path
+import pdfkit
+import fpdf
+from fpdf import FPDF
+import reportlab
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+import types
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
 
-st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", page_icon="data:image/png;base64,/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAcFBggJ/8QAMBAAAgEDAwEECAcAAAAAAAAAAQIDBAURAAYSIQcIIjETFBUyQVFhcSNDYoGRkqH/xAAZAQACAwEAAAAAAAAAAAAAAAACBAEFBgD/xAAlEQACAgECBgMBAQAAAAAAAAABAgADBBEhBRITIlGBMUGRMtH/2gAMAwEAAhEDEQA/AOVWunSfoOz7fd0jEtu2be6mMjkGioJWBH0PHro1qsfdVJ9Q1rdt1Un1Arttjclhx7dsFxt3I4HrdLJDn+wGoZWU6MNIJUrsRpI3QyIzuyW10UdtuN+eSCK6tURUlqabiFJCs8/Fm6JJxMQVjj3mAIJGnsBVNnM41AjuCqmzmYagRu2251FinjO6KyntksgDAXGsjgdgRkHEjAnpjrrTJn0V9rOBNGudQnazgR4bH3HS3OgVDUUlyt8+Y2AljqqeT5qQCyHz6g/TTy2UZabEMP2MB6cpdiGH7FD3r+7ps207Oftd7OqGK0CjmiivFsh6U5SVgiTwr+WQ5VWQeEhgVC4IOa4tw1McdarYfY/yZ7iWCtA6tew8TPVveSTatr9ko88dG9S9esQ5PDK7rhmUdeJjSMBvLIYZyMaqsezptEMezkaW7a+6qmmUU61xRBkGIuCgwOvhPTzPy+GtFQyWDuGsv6WSwdw1jm2fueWOn9KzJDSRfiPJxSKFMgZdm8KDyGST8BqzranGXm2UehH1NNC67KPQlJ7wveJtm49oP2ZbRqRWwVU0cl0rlz6IrE3JIYiffHMKzPgDwqFyMnWe4txNMoCmn+fs+ZQ8Tz0yB0qvjz5mbqaqqaOZaikqJIJU9143KsPsR1GqOU8mYd+bwgXim4aw/qZ+Tfycn/dGLHX4Jhix1+CYBcr/AHy88RdrxW1gTqonnaQL9gTgftoWYtux1gli25MA1Eif/9k=", layout="wide")
+st.set_page_config(page_title="DOCCHAT | WITHMOBIUS", 
+                #    initial_sidebar_state="collapsed",
+                   page_icon="data:image/png;base64,/9j/4AAQSkZJRgABAQIAHAAcAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAgACADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAABAcFBggJ/8QAMBAAAgEDAwEECAcAAAAAAAAAAQIDBAURAAYSIQcIIjETFBUyQVFhcSNDYoGRkqH/xAAZAQACAwEAAAAAAAAAAAAAAAACBAEFBgD/xAAlEQACAgECBgMBAQAAAAAAAAABAgADBBEhBRITIlGBMUGRMtH/2gAMAwEAAhEDEQA/AOVWunSfoOz7fd0jEtu2be6mMjkGioJWBH0PHro1qsfdVJ9Q1rdt1Un1Arttjclhx7dsFxt3I4HrdLJDn+wGoZWU6MNIJUrsRpI3QyIzuyW10UdtuN+eSCK6tURUlqabiFJCs8/Fm6JJxMQVjj3mAIJGnsBVNnM41AjuCqmzmYagRu2251FinjO6KyntksgDAXGsjgdgRkHEjAnpjrrTJn0V9rOBNGudQnazgR4bH3HS3OgVDUUlyt8+Y2AljqqeT5qQCyHz6g/TTy2UZabEMP2MB6cpdiGH7FD3r+7ps207Oftd7OqGK0CjmiivFsh6U5SVgiTwr+WQ5VWQeEhgVC4IOa4tw1McdarYfY/yZ7iWCtA6tew8TPVveSTatr9ko88dG9S9esQ5PDK7rhmUdeJjSMBvLIYZyMaqsezptEMezkaW7a+6qmmUU61xRBkGIuCgwOvhPTzPy+GtFQyWDuGsv6WSwdw1jm2fueWOn9KzJDSRfiPJxSKFMgZdm8KDyGST8BqzranGXm2UehH1NNC67KPQlJ7wveJtm49oP2ZbRqRWwVU0cl0rlz6IrE3JIYiffHMKzPgDwqFyMnWe4txNMoCmn+fs+ZQ8Tz0yB0qvjz5mbqaqqaOZaikqJIJU9143KsPsR1GqOU8mYd+bwgXim4aw/qZ+Tfycn/dGLHX4Jhix1+CYBcr/AHy88RdrxW1gTqonnaQL9gTgftoWYtux1gli25MA1Eif/9k=", layout="wide")
+
+hide_pages(['prompts'])
 #Creating the chatbot interface
 #st.title("Mobius: LLM-Powered Chatbot")
 st.markdown("""
-<h1 style='text-align: center; color: blue;'>Mobius: LLM-Powered Chatbot</h1>
+<h1 style='text-align: center; color: teal;'>Mobius: LLM-Powered Chatbot</h1>
 <style>
     .katex .base {
         width: 100%;
@@ -40,12 +59,15 @@ if 'past' not in st.session_state:
 if 'citation' not in st.session_state:
     st.session_state['citation'] = []
 
+if 'document' not in st.session_state:
+    st.session_state['document'] = None
+    
 if 'page' not in st.session_state:
     st.session_state['page'] = []
 
 ###Global variables:###
 #REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN', default='')
-os.environ["REPLICATE_API_TOKEN"] = ""
+os.environ["REPLICATE_API_TOKEN"] = config.REPLICATE_API_TOKEN
 # #Your your (Replicate) models' endpoints:
 # REPLICATE_MODEL_ENDPOINT7B = os.environ.get('REPLICATE_MODEL_ENDPOINT7B', default='')
 # REPLICATE_MODEL_ENDPOINT13B = os.environ.get('REPLICATE_MODEL_ENDPOINT13B', default='')
@@ -121,8 +143,6 @@ def text_to_docs(text: str) -> List[Document]:
             doc_chunks.append(doc)
     return doc_chunks
 
-import docx2txt
-
 def parse_docx(file):
     text_content = docx2txt.process(file)
     return text_content
@@ -133,12 +153,23 @@ def convert_document_to_dict(document):
         'metadata': document.metadata,  # assuming this is already a dictionary
     }
 
-from pathlib import Path
-import pdfkit
+def save_file(file):
+    try:
+        base_name, extension = os.path.splitext(file.name)
+        file_path = os.path.join("doc/", file.name)
 
+        counter = 1
+        while os.path.exists(file_path):
+            new_file_name = f"{base_name}_{counter}{extension}"
+            file_path = os.path.join("doc/", new_file_name)
+            counter += 1
+        with open(file_path, "wb") as f:
+            f.write(file.read())
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
-import fpdf
-from fpdf import FPDF
+    return str(file_path)
 
 def save_pdf(app_state):
     pdf = FPDF()
@@ -193,13 +224,7 @@ def generate_pdf_session(session_state):
 
     pdf.output("chat_history.pdf")
 
-import reportlab
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-import types
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.units import inch
+
 
 def generate_pdf_reportlab(session_state):
 
@@ -245,6 +270,7 @@ def generate_pdf_reportlab(session_state):
 
 
 def main():
+    create_db()
 
     with st.container():
         col1, col2, col3 = st.columns((25,50,25))
@@ -255,7 +281,7 @@ def main():
     st.markdown("""---""")
 
     if uploaded_file:
-        if user_input:
+        if not st.session_state.document:
             file_extension = uploaded_file.name.split(".")[-1].lower()
             if file_extension == 'pdf':
                 doc = parse_pdf(uploaded_file)
@@ -268,16 +294,19 @@ def main():
             else:
                 st.error("Unsupported file type. Please upload a PDF, DOCX, or TXT file.")
 
-            #output, sources = chat.answer_Faiss(user_input, pages)
-            output, sources, page_number = chat.answer_Faiss_page(user_input, pages)
+            file_path = save_file(uploaded_file)
+            print(f'File path: {file_path}')
 
-            # store the output
-            st.session_state.page.append(page_number)
-            st.session_state.past.append(user_input)
-            st.session_state.generated.append(output)
-         #  converted_sources = [convert_document_to_dict(doc) for doc in sources]
-            converted_sources = [doc.page_content for doc in sources]
-            st.session_state.citation.append(converted_sources)
+            retriever = chat.embed_document(pages)
+
+            if file_path:
+                st.session_state.document = {
+                    "pages": pages,
+                    "file_path": file_path,
+                    "retriever": retriever
+                }
+            else:
+                st.error("File uploading failed. Try again.")
 
             with st.container():
                 col1, col2 = st.columns(2)
@@ -285,8 +314,28 @@ def main():
                     st.title("Chat")
                 with col2:
                     st.title("Citation")
+        elif user_input and user_input.strip() != "":
 
+            document = st.session_state.document
 
+            pages = document['pages']
+            document_path = document['file_path']
+            retriever = document['retriever']
+
+            # Call for output
+            output, sources, page_number = chat.answer_Faiss_page(user_input, retriever)
+
+            # store the output
+            st.session_state.past.append(user_input)
+            st.session_state.generated.append(output)
+            # converted_sources = [convert_document_to_dict(doc) for doc in sources]
+            converted_sources = [doc.page_content for doc in sources]
+            st.session_state.citation.append(converted_sources)
+            st.session_state.page.append(page_number)
+
+            # Log to database
+            log_to_database(user_input, output, converted_sources, document_path)
+            
     with st.container():
         col1, col2 = st.columns(2, gap="large")
         #print("session is: ", st.session_state)
@@ -294,24 +343,15 @@ def main():
 
         if all(st.session_state.get(key) for key in required_keys):
 
-            data = {key: value for key, value in st.session_state.items() if value}
-
-            if not data:
-                print("Session state is empty!")
-            else:
-                print("has data")
-
-            session_state = json.dumps(data)
-
             for i in range(len(st.session_state['generated'])-1, -1, -1):
                 #app_state = json.dumps(st.session_state._state.to_dict())
                 with col1:
                     message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
                     message(st.session_state["generated"][i], key=str(i))
-                with col2:
-                  #  item_list = []
-                    for item in st.session_state["citation"][i]:
-                        st.info(str(item), icon="ℹ️")
+            with col2:
+                #  item_list = []
+                for item in st.session_state["citation"][-1]:
+                    st.info(str(item), icon="ℹ️")
                        
                     #app_state_list["sources"] = item_list
     

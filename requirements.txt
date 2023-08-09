@@ -13,3 +13,5 @@ httpx
 faiss-cpu
 pdfkit
 fpdf
+st-pages
+reportlab
