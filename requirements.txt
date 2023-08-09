@@ -11,3 +11,5 @@ chromadb
 tiktoken
 httpx
 faiss-cpu
+pdfkit
+fpdf
