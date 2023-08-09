@@ -152,7 +152,7 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
     # create the vectorestore to use as the index
     docsearch = FAISS.from_documents(texts, embeddings)
     # expose this index in a retriever interface
-    retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":6})
+    retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k": config.k})
     
     # create a chain to answer questions 
     qa = RetrievalQA.from_chain_type(

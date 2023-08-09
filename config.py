@@ -18,4 +18,4 @@ DOCUMENTS:
 =========
 Finish by proposing your help for anything else.
 """
-k = 4  # number of chunks to consider when generating answer
+k = 6  # number of chunks to consider when generating answer
