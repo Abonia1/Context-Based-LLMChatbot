@@ -3,10 +3,10 @@ from db import retrieve_logs
 import sqlite3
 import json
 
-def file_download_link(file_path, file_name):
+def file_download_link(file_path, file_name, key):
     with open(file_path, "rb") as f:
         file_data = f.read()
-    st.download_button(label="Download File", data=file_data, file_name=file_name)
+    st.download_button(label="Download File", data=file_data, file_name=file_name, key=key)
 
 st.set_page_config(layout="wide", page_title="Data Analytics: Prompt DB", page_icon="📝")
 
@@ -88,7 +88,7 @@ if check_password():
                     st.warning(citation)
             
             file_name = file_path.split("/")[-1]
-            file_download_link(file_path, file_name)
+            file_download_link(file_path, file_name, id)
 
         st.markdown("---")
 
