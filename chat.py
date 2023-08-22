@@ -13,6 +13,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQAWithSourcesChain
+import time
 
 # import os
 # import nltk
@@ -149,6 +150,7 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
     embeddings = OpenAIEmbeddings(openai_api_key=config.OPENAI_API_KEY)
     # create the vectorestore to use as the index
     docsearch = FAISS.from_documents(texts, embeddings)
+
     # expose this index in a retriever interface
     retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k": config.k})
     
@@ -171,6 +173,54 @@ def answer_Faiss(prompt: str, documents: List[Document], persist_directory: str 
     sources = result['source_documents']
 
     return answer, sources
+
+
+MAX_RETRIES = 5 
+
+
+def answer_Faiss_rate(prompt: str, documents: List[Document], persist_directory: str = config.PERSIST_DIR):
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=50, separator="\n")
+    texts = text_splitter.split_documents(documents)
+    # select which embeddings we want to use
+    embeddings = OpenAIEmbeddings(openai_api_key=config.OPENAI_API_KEY)
+    # create the vectorestore to use as the index
+    docsearch = FAISS.from_documents(texts, embeddings)
+    # docsearch = None
+    # import sqlite3
+    # for text in texts:
+    #     if docsearch is None:
+    #         docsearch = FAISS.from_documents([text], embeddings)
+    #     else:
+    #         for i in range(MAX_RETRIES):
+    #             try:
+    #                 docsearch.add_documents([text])
+    #                 break
+    #             except sqlite3.OperationalError:   
+    #                 time.sleep(1)
+
+    # expose this index in a retriever interface
+    retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k": config.k})
+    
+    # create a chain to answer questions 
+    qa = RetrievalQA.from_chain_type(
+        llm=OpenAI(
+            openai_api_key = config.OPENAI_API_KEY,
+            model_name="text-davinci-003",
+            temperature=0,
+            max_tokens=300,
+            batch_size=50,
+        ), chain_type="stuff", retriever=retriever, return_source_documents=True)
+    #query = "How many AI publications in 2021?"
+    result = qa({"query": prompt})
+
+ #   prompt_template = PromptTemplate(template=config.prompt_template, input_variables=["context", "question"])
+
+    answer = result["result"]
+
+    sources = result['source_documents']
+
+    return answer, sources
+
 
 
 def answer_Faiss_page(prompt: str, retriever, persist_directory: str = config.PERSIST_DIR):
